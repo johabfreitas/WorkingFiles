@@ -11,7 +11,7 @@ public class Exemplo3 {
 
 	public static void main(String[] args) {
 
-		String path = "/tmp/in.txt";
+		String path = "/tmp/source.csv";
 
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			String line = br.readLine();
