@@ -2,9 +2,13 @@ package application;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -12,53 +16,50 @@ import entities.Product;
 
 public class Exercicio1 {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 
 		Locale.setDefault(Locale.US);
 		Scanner sc = new Scanner(System.in);
-
+		
+		List<Product> list = new ArrayList<>();
+		
 		System.out.println("Enter file path: ");
-		String path = sc.nextLine();
+		String sourceFileStr = sc.nextLine();
+		
+		File sourceFile = new File(sourceFileStr);
+		String sourceFolderStr = sourceFile.getParent();
+		
+		boolean success = new File(sourceFolderStr + "/out").mkdir();
+		
+		String targetFileStr = sourceFolderStr + "/out/summary.csv";
 
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-			String[] line = br.readLine().split(",");
-
-			for (int i = 0; i < line.length; i++) {
-				line = br.readLine().split(",");
-				Product product = new Product();
-				product.setName(line[0]);
-				product.setPrice(Double.parseDouble(line[1]));
-				product.setQuantity(Integer.parseInt(line[2]));
-
-//				System.out.println(
-//						product.getName() + ", " + product.finalPrice(product.getPrice(), product.getQuantity()));
-				BufferedWriter bw = new BufferedWriter(new FileWriter(path, true));
-				bw.write(product.getName() + ", " + product.finalPrice(product.getPrice(), product.getQuantity()));
-				bw.newLine();
-				bw.close();
-//				try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
-//					for (String lines : line) {
-//						bw.write(lines);
-//						bw.newLine();
-//					}
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-
+		try (BufferedReader br = new BufferedReader(new FileReader(sourceFileStr))) {
+				
+			String itemCsv = br.readLine();
+			while(itemCsv != null) {
+				
+				String[] fields = itemCsv.split(",");
+				
+				String name = fields[0];
+				double price = Double.parseDouble(fields[1]);
+				int quantity = Integer.parseInt(fields[2]);
+				
+				list.add(new Product(name, price, quantity));
+				
+				itemCsv = br.readLine();
 			}
-			/*
-			 * while (line != null) { line = br.readLine().split(","); Product product = new
-			 * Product(); product.setName(line[0]);
-			 * product.setPrice(Double.parseDouble(line[1]));
-			 * product.setQuantity(Integer.parseInt(line[2]));
-			 * 
-			 * System.out.println( product.getName() + ", " +
-			 * product.finalPrice(product.getPrice(), product.getQuantity()));
-			 * 
-			 * }
-			 */
+			try(BufferedWriter bw = new BufferedWriter(new FileWriter(targetFileStr))){
+				for(Product item : list) {
+					bw.write(item.getName() + ", " + String.format("%.2f", item.finalPrice()));
+					bw.newLine();
+				}
+				System.out.println(targetFileStr + " CREATED!");
+			} catch(IOException e) {
+				System.out.println("Error writing file: " + e.getMessage());
+			}
+			
 		} catch (IOException e) {
-			System.out.println("Error: " + e.getMessage());
+			System.out.println("Error reading file: " + e.getMessage());
 		}
 
 		sc.close();

@@ -39,7 +39,7 @@ public class Product {
 		this.quantity = quantity;
 	}
 
-	public double finalPrice(double price, int quantity) {
+	public double finalPrice() {
 		return price * quantity; 
 	}
 
