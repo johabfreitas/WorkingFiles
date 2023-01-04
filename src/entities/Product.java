@@ -40,12 +40,12 @@ public class Product {
 	}
 
 	public double finalPrice(double price, int quantity) {
-		return price * quantity;
+		return price * quantity; 
 	}
 
 	@Override
 	public String toString() {
-		return "Product [name=" + name + ", price=" + price + ", quantity=" + quantity + "]";
+		return name + ", " + price + ", " + quantity;
 	}
 	
 	
